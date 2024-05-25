@@ -12,6 +12,7 @@ set(SOURCES
     src/LimitNode.cpp
     src/LimitTree.cpp
     src/Order.cpp
+    src/main.cpp
 )
 
 # Add an executable with the above sources

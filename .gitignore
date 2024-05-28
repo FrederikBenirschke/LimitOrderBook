@@ -1,6 +1,8 @@
 build/
-Test/
-
+debug/
+old/
+.vscode/
+*.json
 
 
 *.out

@@ -3,7 +3,7 @@
 [![Limit order book](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/FrederikBenirschke/LimitOrderBook)
 
 
-A limit order is an order to buy a stock at a specified maximum or sell a stock at a fixed minimum price. A limit order book is an integral part of a trading system and keeps track of the outstanding bid and asks, which are cleared when new limit orders arrive.
+A limit order is an order to buy a stock at a specified maximum or sell a stock at a fixed minimum price. A limit order book is an integral part of a trading system and keeps track of the outstanding bid and asks, which are cleared, when new limit orders arrive. Here we implement a First-in-first-out (FIFO) limit order book, which matches incoming orders with the order that have been in the order book for the longest time.
 
 ## Table of Contents
 
@@ -43,6 +43,7 @@ The benchmark consist of random insertion/deletion of orders (with random size/p
 
 
 ```c++
+#include "OrderBook.h"
  OrderBook<> book;
  book.addOrder(1, 1, Buy); //Add a buy order to the order book
  //Since it is the first order it will be added directly

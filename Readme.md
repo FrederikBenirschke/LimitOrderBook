@@ -3,7 +3,7 @@
 [![Limit order book](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/FrederikBenirschke/LimitOrderBook)
 
 
-A limit order is an order to buy a stock at a specified maximum or sell a stock at a fixed minimum price. A limit order book is an integral part of a trading system and keeps track of the outstanding bid and asks, which are cleared, when new limit orders arrive. Here we implement a First-in-first-out (FIFO) limit order book, which matches incoming orders with the order that have been in the order book for the longest time.
+A limit order is an order to buy/sell a stock at a specified maximum/minimum price. A limit order book(LOB) is an integral part of a trading system and keeps track of all outstanding limit orders. If new bids and asks arrive, they are compared with the existing orders in the LOB and filled if possible. If the order cannot be filled completely it is then added to the LOB. Here we implement a First-in-first-out (FIFO) limit order book, which matches incoming orders with the order that have been in the order book for the longest time.
 
 ## Table of Contents
 

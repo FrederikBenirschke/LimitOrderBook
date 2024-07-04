@@ -33,6 +33,20 @@ int main()
 }
 
 
+/**
+ * Generates a random order with a random price and size.
+ *
+ * @tparam PriceDis A type representing the distribution of prices.
+ * @tparam SizeDis A type representing the distribution of sizes.
+ *
+ * @param priceDis The distribution of prices.
+ * @param sizeDis The distribution of sizes.
+ * @param orderType The type of the order.
+ *
+ * @return A pointer to the generated Order.
+ *
+ * @throws None.
+ */
 template <class PriceDis, class SizeDis>
 Order *randomOrder(
     PriceDis priceDis, SizeDis sizeDis, OrderType orderType)

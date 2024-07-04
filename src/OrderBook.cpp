@@ -416,12 +416,5 @@ namespace LOB
 
     //Default initialization of template
     template class OrderBook<Limit, LimitContainer<Limit, std::less<int>>, LimitContainer<Limit, std::greater<int>>>;
-
-   
-   
-    
-   
-
-
     }
 

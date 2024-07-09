@@ -28,7 +28,7 @@ One of the key functionalities of the LOB is the ability to add and cancel order
 
 To achieve efficient insertion, deletion, and retrieval of orders in the LOB, a suitable data structure is essential. In this implementation, we use a red-black tree (provided by the std::map container in C++) to store the prices. For each price, we additonally maintain a doubly linked list that stores all the orders at that price.
 
-The red-black tree is a self-balancing binary search tree that ensures efficient search, insertion, and deletion operations. By using a balanced tree, we can quickly find the smallest or largest price in the LOB. The doubly linked list allows for efficient insertion and deletion of orders at a specific price.
+The red-black tree is a self-balancing binary search tree that ensures efficient search, insertion, and deletion operations. The tree maintains its balance through rotations and color changes, ensuring that the path from the root to any leaf is logarithmic in the number of nodes. This guarantees that all basic operations – insertion, deletion, and search – are performed in O(log n) time, where n is the number of price levels in the LOB. By using a balanced tree, we can quickly find the smallest or largest price in the LOB. The doubly linked list allows for efficient insertion and deletion of orders at a specific price. The use of a doubly linked list enables quick addition and removal of orders, as each node in the list can be removed or inserted in constant time, O(1).
 
 
 

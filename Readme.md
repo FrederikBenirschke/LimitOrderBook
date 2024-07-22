@@ -56,7 +56,7 @@ make
 ./LOB
 ```
 
-Additionally, you can run a benchmark test usin[Google benchmark](https://github.com/google/benchmark). To run the benchmark, execute the following commands:
+Additionally, you can run a benchmark test using [Google benchmark](https://github.com/google/benchmark). To run the benchmark, execute the following commands:
 ```
 make
 ./LOB_test

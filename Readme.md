@@ -9,7 +9,7 @@ The Limit Order Book (LOB) is a crucial component of a trading system. It keeps 
 
 When a new limit order arrives, it is compared with the existing orders in the LOB. If there is an existing order with a matching price, the order is filled. The quantity of the incoming order is matched against the existing order. If the incoming order cannot be fully filled, the remaining quantity is added to the LOB.
 
-The order matching process in the LOB  that is implemented here is based on the principle of First-in-first-out (FIFO). This means that the order that has been in the LOB for the longest time is matched first. If there are multiple orders with the same price, the order that was added to the LOB first is matched first.
+The order matching process in the LOB implemented here follows the principle of First-in, First-out (FIFO). This means that the order that has been in the LOB for the longest time is matched first. If there are multiple orders with the same price, the order that was added to the LOB first is matched first.
 
 The LOB ensures that the orders are matched in a fair and efficient manner. It helps maintain the integrity and transparency of the market. Traders can gain insights into market depth and liquidity by monitoring the contents of the LOB.
 
@@ -29,11 +29,11 @@ One of the key functionalities of the LOB is the ability to add and cancel order
 To achieve efficient insertion, deletion, and retrieval of orders in the LOB, a suitable data structure is essential. In this implementation, we use a template approach that supports custom data structures for storing the different price levels.
 Currently two data structures are implemented `LimitContainerMap` and `LimitContainerBucket`.
 
-`LimitContainerMap` utilizes a red-black tree (provided by the `std::map` container in C++) to store the prices. For each price, we additonally maintain a doubly linked list that stores all the orders at that price.
+`LimitContainerMap` utilizes a red-black tree (provided by the `std::map` container in C++) to store the prices. For each price, we additionally maintain a doubly linked list that stores all the orders at that price.
 
 The red-black tree is a self-balancing binary search tree that ensures efficient search, insertion, and deletion operations. The tree maintains its balance through rotations and color changes, ensuring that the path from the root to any leaf is logarithmic in the number of nodes. This guarantees that all basic operations – insertion, deletion, and search – are performed in O(log n) time, where n is the number of price levels in the LOB. By using a balanced tree, we can quickly find the smallest or largest price in the LOB. The doubly linked list allows for efficient insertion and deletion of orders at a specific price. The use of a doubly linked list enables quick addition and removal of orders, as each node in the list can be removed or inserted in constant time, O(1).
 
-`LimitContainerBucket` is based on a bucket queue and hinges on the fact that the traded assets have a tick size, (which we assume to be 1cent).
+`LimitContainerBucket` is based on a bucket queue and hinges on the fact that the traded assets have a tick size (which we assume to be 1 cent).
 With suitable optimization this can achieve amortized constant runtime for insertion, deletion and search operations.
 
 
@@ -48,7 +48,7 @@ To compile and install the project, follow these steps:
 git clone https://github.com/FrederikBenirschke/LimitOrderBook.git
 ```
 
-2. Generate the Makefule using
+2. Generate the Make file using
  [cmake](https://cmake.org)
 
 ```bash 

@@ -26,9 +26,15 @@ A limit order book (LOB) is an integral part of a trading system that facilitate
 
 One of the key functionalities of the LOB is the ability to add and cancel orders. When a new order arrives, it is added to the LOB. If an existing order is cancelled, it is removed from the LOB. The LOB must always provide the smallest ask (the highest price at which sellers are willing to sell) and the largest bid (the lowest price at which buyers are willing to buy).
 
-To achieve efficient insertion, deletion, and retrieval of orders in the LOB, a suitable data structure is essential. In this implementation, we use a red-black tree (provided by the std::map container in C++) to store the prices. For each price, we additonally maintain a doubly linked list that stores all the orders at that price.
+To achieve efficient insertion, deletion, and retrieval of orders in the LOB, a suitable data structure is essential. In this implementation, we use a template approach that supports custom data structures for storing the different price levels.
+Currently two data structures are implemented `LimitContainerMap` and `LimitContainerBucket`.
+
+`LimitContainerMap` utilizes a red-black tree (provided by the `std::map` container in C++) to store the prices. For each price, we additonally maintain a doubly linked list that stores all the orders at that price.
 
 The red-black tree is a self-balancing binary search tree that ensures efficient search, insertion, and deletion operations. The tree maintains its balance through rotations and color changes, ensuring that the path from the root to any leaf is logarithmic in the number of nodes. This guarantees that all basic operations – insertion, deletion, and search – are performed in O(log n) time, where n is the number of price levels in the LOB. By using a balanced tree, we can quickly find the smallest or largest price in the LOB. The doubly linked list allows for efficient insertion and deletion of orders at a specific price. The use of a doubly linked list enables quick addition and removal of orders, as each node in the list can be removed or inserted in constant time, O(1).
+
+`LimitContainerBucket` is based on a bucket queue and hinges on the fact that the traded assets have a tick size, (which we assume to be 1cent).
+With suitable optimization this can achieve amortized constant runtime for insertion, deletion and search operations.
 
 
 
@@ -70,14 +76,14 @@ To utilize the Limit Order Book in your trading system, follow these steps:
 ```c++
 #include "OrderBook.h"
  OrderBook<> book;
- book.addOrder(1, 1, Buy); //Add a buy order to the order book
- //Since it is the first order it will be added directly
+ book.addOrder(1, 1, Buy); // Add a buy order to the order book
+ // Since it is the first order it will be added directly
 
- book.addOrder(2, 1, Sell); //add a sell order of size 2 at price 1
- //the order is matched with the existing buy order and one unit is sold
- //the remaining sell order is added to the book
+ book.addOrder(2, 1, Sell); // Add a sell order of size 2 at price 1
+ // The order is matched with the existing buy order and one unit is sold
+ // The remaining sell order is added to the book
  
- book.print()//the result can be printed
+ book.print()// Graphical representation of current state of the LOB
 
 ```
 

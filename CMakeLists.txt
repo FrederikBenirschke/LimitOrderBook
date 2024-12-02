@@ -19,6 +19,8 @@ add_library(library STATIC
 src/OrderBook.cpp
 src/Limit.cpp
 src/LimitContainer.cpp
+src/LimitContainerMap.cpp
+src/LimitContainerBucket.cpp
 )
 
 find_package(benchmark REQUIRED)

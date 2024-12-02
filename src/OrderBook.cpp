@@ -11,12 +11,11 @@
 
 // Macro to fill a line with a prescribed nuber of -
 #define hfill(n) (std::cout << std::string(n, '-') << "\n")
+#define hfill(n) (std::cout << std::string(n, '-') << "\n")
 #define width 40
 
 
-// #include "Order.h"
-// #include "Limit.h"
-// #include "LimitContainer.h"
+
 #include "OrderBook.h"
 namespace LOB
 {
@@ -25,12 +24,12 @@ namespace LOB
      * @brief Standard constructor. Initializes two limit containers, one for sell order and 
      * one for buy orders.
     */
-    template <typename LimitT, typename LimitContainerT, typename LimitContainerU>
-    OrderBook<LimitT, LimitContainerT, LimitContainerU>::OrderBook() :
+    template <typename LimitT, typename LimitContainerT>
+    OrderBook<LimitT, LimitContainerT>::OrderBook() :
      currentId(0), buyContainer(nullptr), sellContainer(nullptr), askPrice(INT_MAX), bidPrice(INT_MIN)
     {
         buyContainer = new LimitContainerT();
-        sellContainer = new LimitContainerU();
+        sellContainer = new LimitContainerT();
     }
 
 
@@ -38,8 +37,8 @@ namespace LOB
      * @brief Returns the current bid-ask spread of the order book.
      * @return The difference between current bid and ask price.
     */
-    template <typename LimitT, typename LimitContainerT, typename LimitContainerU>
-    int OrderBook<LimitT, LimitContainerT, LimitContainerU>::spread()
+    template <typename LimitT, typename LimitContainerT>
+    int OrderBook<LimitT, LimitContainerT>::spread()
     {
         return askPrice - bidPrice;
     }
@@ -50,8 +49,8 @@ namespace LOB
      * @param order the new order to be added
      * @param verbose if true, explains the trades that are performed
     */
-    template <typename LimitT, typename LimitContainerT, typename LimitContainerU>
-    void OrderBook<LimitT, LimitContainerT, LimitContainerU>::addOrder(Order *order, bool verbose)
+    template <typename LimitT, typename LimitContainerT>
+    void OrderBook<LimitT, LimitContainerT>::addOrder(Order *order, bool verbose)
     {
         if (order == nullptr || order->size <= 0)
         {
@@ -69,12 +68,12 @@ namespace LOB
                 std::cout<<"\n";
 
             }
-            while (!sellContainer->isEmpty() && order->size > 0 && sellContainer->topPrice() <= order->price)
+            while (!sellContainer->isEmpty() && order->size > 0 && sellContainer->bottomPrice() <= order->price)
             {
                 // There is a matching sell order?
-                LimitT *limit = sellContainer->top();
+                LimitT *limit = sellContainer->bottom();
 
-                Order *sellOrder = sellContainer->topOrder();
+                Order *sellOrder = limit->top();
                 int sellSize = sellOrder->size;
 
                 if (order->size >= sellSize)
@@ -193,13 +192,13 @@ namespace LOB
     }
 
 
-    template <typename LimitT, typename LimitContainerT, typename LimitContainerU>
-    void OrderBook<LimitT, LimitContainerT, LimitContainerU>::update()
+    template <typename LimitT, typename LimitContainerT>
+    void OrderBook<LimitT, LimitContainerT>::update()
     {
          // Update ask and bids
         if (!sellContainer->isEmpty())
         {
-            askPrice = sellContainer->topPrice();
+            askPrice = sellContainer->bottomPrice();
         }
         else
         {
@@ -225,8 +224,8 @@ namespace LOB
      * @param order to be cancelled
      *  * @param verbose if true, prints which order is cancelled
     */
-    template <typename LimitT, typename LimitContainerT, typename LimitContainerU>
-    void OrderBook<LimitT, LimitContainerT, LimitContainerU>::cancelOrder(Order *order, bool verbose)
+    template <typename LimitT, typename LimitContainerT>
+    void OrderBook<LimitT, LimitContainerT>::cancelOrder(Order *order, bool verbose)
     {
         if (order->orderType == Buy)
         {
@@ -266,8 +265,8 @@ namespace LOB
      * @param verbose if true, prints which trades are performed
      * @return The new order that was created.
     */
-    template <typename LimitT, typename LimitContainerT, typename LimitContainerU>
-    Order *OrderBook<LimitT, LimitContainerT, LimitContainerU>::addOrder(int size, int price, OrderType orderType, bool verbose)
+    template <typename LimitT, typename LimitContainerT>
+    Order *OrderBook<LimitT, LimitContainerT>::addOrder(int size, int price, OrderType orderType, bool verbose)
     {
 
         Order *order = new Order(size, price, orderType);
@@ -281,8 +280,8 @@ namespace LOB
      * @brief Adds a new order with specified size, price and order type.
      * @param order to be registered in the order book
     */
-    template <typename LimitT, typename LimitContainerT, typename LimitContainerU>
-    void OrderBook<LimitT, LimitContainerT, LimitContainerU>::registerOrder(Order *order)
+    template <typename LimitT, typename LimitContainerT>
+    void OrderBook<LimitT, LimitContainerT>::registerOrder(Order *order)
     {
             currentId++;
             order->orderId = currentId;
@@ -294,8 +293,8 @@ namespace LOB
      * @brief Adds a new order with specified size, price and order type.
      * @param order to be registered in the order book
     */
-    template <typename LimitT, typename LimitContainerT, typename LimitContainerU>
-    void OrderBook<LimitT, LimitContainerT, LimitContainerU>::unregisterOrder(Order *order)
+    template <typename LimitT, typename LimitContainerT>
+    void OrderBook<LimitT, LimitContainerT>::unregisterOrder(Order *order)
     {
         
         if(!orderMap.contains(order->orderId)){return;}
@@ -320,101 +319,77 @@ namespace LOB
     std::string center(const std::string s, const int w)
     {
         std::stringstream ss, spaces;
-        int padding = w - s.size(); // count excess room to pad
+        int padding = w - s.size();
         for (int i = 0; i < padding / 2; ++i)
             spaces << " ";
-        ss << spaces.str() << s << spaces.str(); // format with padding
-        if (padding > 0 && padding % 2 != 0)     // if odd #, add 1 space
+        ss << spaces.str() << s << spaces.str(); 
+        if (padding > 0 && padding % 2 != 0)    
             ss << " ";
         return ss.str();
     }
 
 
 
-     /**
-     * @brief Prints the current order book, and shows how many sell/buy orders exist at which price.
-    */
-    template <typename LimitT, typename LimitContainerT, typename LimitContainerU>
-    void OrderBook<LimitT, LimitContainerT, LimitContainerU>::print()
-    {
-
-        //List of all prices, from both buy and sell orders
+   
+    template <typename LimitT, typename LimitContainerT>
+    void OrderBook<LimitT, LimitContainerT>::print(){
         std::map<int, std::vector<int>, std::greater<int>> prices;
-        for (auto &pair : buyContainer->limits)
-        //First enter all buy orders
-        {
-            int price = pair.first;
-            //A price should never be in both limit containers
-            assert(!sellContainer->limits.contains(price));
-            // if (sellContainer->limits.contains(price))
-            // {
-            //     //Check if the price is in both limit containers
-            //     // Note that that should never happen.
-            //     prices[price] = {pair.second->size, sellContainer->limits[price]->size};
-            // }
-            // else
-            // {
-             prices[price] = {pair.second->size, 0};
-            // }
-        }
 
-        for (auto &pair : sellContainer->limits)
-        {
-            //Now record all sell order prices
-            int price = pair.first;
-            
-                prices[price] = {0, pair.second->size};
-        }
-
-
-
-        //Start printing the orders
-        int numBars = 40;
-        bool asks = true;
-
-        hfill(numBars);
-        std::cout << "Current status of limit order book " << "\n";
-        //Show the spread
-        std::cout << "Bid-ask spread: " << spread() << "\n";
-        hfill(numBars);
-        std::cout << "| " << center("bids", 10) << " | "
-                  << center("price", 10) << " | "
-                  << center("asks", 10) << " |" << "\n";
-        hfill(numBars);
-        for (auto &price : prices)
-        {
-            if (asks == true && price.second[1] == 0)
-            {
-                asks = false;
-                hfill(numBars);
-            }
-            std::cout << "| ";
-            std::stringstream ss;
-            if (price.second[0] == 0)
-            {
-                std::cout << center(" ", 10);
-            }
-            else
-            {
-                std::cout << center(std::to_string(price.second[0]), 10);
-            }
-            std::cout << " | " << center(std::to_string(price.first), 10) << " | ";
-            if (price.second[1] == 0)
-            {
-                std::cout << center(" ", 10);
-            }
-            else
-            {
-                std::cout << center(std::to_string(price.second[1]), 10);
-            }
-            std::cout << " |" << "\n";
-        }
-        hfill(numBars);
+    // Iterate over buyContainer and collect buy orders
+    for (const auto &it : buyContainer->GetPriceMap()){
+        int price = it.first;
+        LimitT* limit = it.second; 
+        prices[price] = {limit->size, 0}; 
     }
 
-
-
-    //Default initialization of template
-    template class OrderBook<Limit, LimitContainer<Limit, std::less<int>>, LimitContainer<Limit, std::greater<int>>>;
+    // Iterate over sellContainer and collect sell orders
+    for (const auto &it : sellContainer->GetPriceMap()){
+        int price = it.first;  
+        LimitT* limit = it.second;  
+        prices[price] = {0, limit->size};  
     }
 
+    // Start printing the orders
+    int numBars = 40;
+    bool asks = true;
+
+    hfill(numBars);
+    std::cout << "Current status of limit order book " << "\n";
+    // Show the spread
+    std::cout << "Bid-ask spread: " << spread() << "\n";
+    hfill(numBars);
+    std::cout << "| " << center("bids", 10) << " | "
+              << center("price", 10) << " | "
+              << center("asks", 10) << " |" << "\n";
+    hfill(numBars);
+    for (auto &price : prices) {
+        if (asks == true && price.second[1] == 0) {
+            asks = false;
+            hfill(numBars);
+        }
+        std::cout << "| ";
+        if (price.second[0] == 0) {
+            std::cout << center(" ", 10);
+        } else {
+            std::cout << center(std::to_string(price.second[0]), 10);
+        }
+        std::cout << " | " << center(std::to_string(price.first), 10) << " | ";
+        if (price.second[1] == 0) {
+            std::cout << center(" ", 10);
+        } else {
+            std::cout << center(std::to_string(price.second[1]), 10);
+        }
+        std::cout << " |" << "\n";
+    }
+    hfill(numBars);
+}
+
+
+template class OrderBook<Limit, LimitContainerMap<Limit>>;
+
+
+template class OrderBook<Limit, LimitContainerBucket<Limit>>;
+
+
+
+}

@@ -10,7 +10,7 @@ using namespace LOB;
 
 int main()
 {
-    OrderBook<> book;
+    OrderBook<Limit, LimitContainerBucket<Limit>> book;
     //Add 9 order at prices from 1 to 9
     for (int i = 1; i < 10; i++)
     {

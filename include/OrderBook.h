@@ -3,6 +3,8 @@
 #include <unordered_map>
 #include "Limit.h"
 #include "LimitContainer.h"
+#include "LimitContainerMap.h"
+#include "LimitContainerBucket.h"
 namespace LOB
 {
 
@@ -17,16 +19,13 @@ namespace LOB
      * 
      * @tparam LimitT - the data structure used for the orders at a given price.
      * The default is Limit, which is implemented using a doubly linked list.
-     * @tparam LimitContainerT - data structure containing the prices of all buy orders.
-     * Default is LimitContainer, which is implemented using std::map. Depending on the implementation
-     * this should be represented by a red-black tree. By default the buys are in ascending order,
-     * so that top() gives the largest bid.
-     * @tparam LimitContainerU - Similar structure for the sell prices.
-     * By default this uses the same LimitContainer as for the buys but in descending order.
+     * @tparam LimitContainerT - data structure containing the prices of all buy/sell orders.
+     * Uses the same data structure for both buy and sell orders, the difference is that buy orders access 
+     * the top price by default, sell orders the bottom price.
+     * Default is LimitContainer, which is implemented using std::map(which is a Red-Black tree in clang/g++)
      */
     template <typename LimitT = Limit,
-    typename LimitContainerT=LimitContainer<LimitT,std::less<int>>,
-    typename LimitContainerU=LimitContainer<LimitT,std::greater<int>>>
+    typename LimitContainerT=LimitContainerMap<LimitT>>
     class OrderBook
     {
 
@@ -37,7 +36,7 @@ namespace LOB
     public:
         int                  currentId;
         LimitContainerT     *buyContainer;// Container with all buy orders
-        LimitContainerU     *sellContainer; // Container with all sell orders
+        LimitContainerT     *sellContainer; // Container with all sell orders
 
         int                                     askPrice;//current smallest sell order
         int                                     bidPrice;//current largest buy order
@@ -46,16 +45,19 @@ namespace LOB
 
 
         
-        OrderBook();//standard constructor, initializes empty limit containers
+        OrderBook(); //standard constructor, initializes empty limit containers
+        ~OrderBook() {delete buyContainer; delete sellContainer;}
         int     spread();
         void    addOrder(Order *order, bool verbose=false);
         Order   *addOrder(int size, int price, OrderType orderType, bool verbose=false);
         void    cancelOrder(Order *order, bool verbose = false);
-        // void    cancelOrder(int orderId, bool verbose = false);
         void    registerOrder(Order* order);
         void    unregisterOrder(Order* order);
-        // void    explain();
         void    update();
         void    print();
     };
+
+
+
+   
 }

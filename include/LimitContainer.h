@@ -11,42 +11,50 @@ namespace LOB
     
 
     /**
-     * @brief Container for a list of prices, and for each price a data structure containing all 
-     * orders at that price point. Implementation based on std::map for effective insertion/deletion.
+     * @brief Abstract container for a list of prices, and for each price a data structure containing all 
+     * orders at that price point.
      * @tparam LimitT - Data structure containing all orders, by default a doubly linked list.
-     * @tparam OP - comparison operator used to order the prices. By default in ascending order.
      */
-    template <typename LimitT = Limit, typename OP = std::less<int>>
+    template <typename LimitT = Limit>
     class LimitContainer
     {
 
     private:
-        int         cmp(const int a, const int b) const;
-        LimitT      *maximum(LimitT *node);
-        LimitT      *minimum(LimitT *node);
-        LimitT      *addLimitHelper(LimitT *parent, int price, int dir);
-      
+
+        int                             size;
+
+        virtual void removeLimit(LimitT *limit) = 0;
         
     public:
-        int                             size;
-        std::map<int, LimitT *, OP>     limits;//map containing all prices and all corresponding orders
+        
        
         LimitContainer() : size(0) {}//standard constructor
-        ~LimitContainer();
+        virtual ~LimitContainer() = default;
 
-        LimitT      *addPrice(int price);
-        LimitT      *search(int price);
+        virtual LimitT      *addPrice(int price) = 0;
+        virtual LimitT      *search(int price) = 0;
+
         void        addOrder(Order *order);
         void        deleteOrder(Order *order);
         void        addOrderAtLimit(Order *order, LimitT *limit);
         void        deleteOrderAtLimit(Order *order, LimitT *limit);
         void        updateOrder(Order *order, int newSize);
         void        updateOrderAtLimit(Order *order, LimitT *limit, int newSize);
-        void        removeLimit(LimitT *limit);
-        LimitT      *top();
-        int         topPrice();
-        Order       *topOrder();
-        void        pop(LimitT *limit);
-        bool        isEmpty();
+
+        virtual LimitT      *top() = 0;
+        int                 topPrice();
+        virtual LimitT      *bottom() = 0;
+        int                 bottomPrice();
+        void                pop(LimitT *limit);
+        virtual bool        isEmpty() = 0;
+
+
+
+        // Ordered_map containing all prices, only used for printing the current state of the LOB
+        virtual std::map<int, LimitT*, std::greater<int>> GetPriceMap() = 0;
+
+
+        
+
     };
 }
